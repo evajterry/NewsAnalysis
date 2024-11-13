@@ -1,43 +1,24 @@
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score, classification_report
 import nltk
-from nltk.corpus import stopwords
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-import string
+import ssl
+from pprint import pprint
 
-nltk.download('punkt')
-nltk.download('vader_lexicon')
-nltk.download('stopwords')
+# nltk.download('punkt_tab')
 
-stop_words = set(stopwords.words('english'))
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
 
-def preprocess(text):
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    text = ' '.join([word.lower() for word in text.split() if word.lower() not in stop_words])
-    return text
+nltk.download([
+    "names",
+    "stopwords",
+    "state_union",
+    "twitter_samples",
+    "movie_reviews",
+])
 
-def load_data(file_path):
-    df = pd.read_csv(file_path)
-    df['processed_text'] = df['text'].apply(preprocess)
-    return df
+text = "For some quick analysis, use the NLTK library. It's pretty easy."
+pprint(nltk.word_tokenize(text), width=79, compact=True)
 
-# df = load_data("TrumpAtMcDonalds/APTrumpMcDonalds.txt")
-
-# sia = SentimentIntensityAnalyzer()
-
-# def get_sentiment(text):
-#     score = sia.polarity_scores(text)
-#     if score['compound'] >= 0.05:
-#         return "positive"
-#     elif score['compound'] <= -0.05:
-#         return "negative"
-#     else:
-#         return "neutral"
-
-# df['initial_sentiment'] = df['processed_text'].apply(get_sentiment)
-
-
-print(load_data("TrumpAtMcDonalds/APTrumpMcDonalds.txt"))
